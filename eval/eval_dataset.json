@@ -1,0 +1,22 @@
+[
+  {
+    "question": "¿Cuál es el objetivo principal del documento estructurado de ejemplo?",
+    "expected_source": "REEMPLAZA_con_tu_pdf_estructurado.pdf",
+    "expected_keywords": ["objetivo", "propósito"]
+  },
+  {
+    "question": "¿Qué metodología se describe en la sección de metodología?",
+    "expected_source": "REEMPLAZA_con_tu_pdf_estructurado.pdf",
+    "expected_keywords": ["metodología", "método"]
+  },
+  {
+    "question": "¿Qué conclusiones presenta el documento sin estructura?",
+    "expected_source": "REEMPLAZA_con_tu_pdf_sin_estructura.pdf",
+    "expected_keywords": ["conclusión", "conclusiones"]
+  },
+  {
+    "question": "¿Qué cifras o resultados numéricos se mencionan?",
+    "expected_source": "REEMPLAZA_con_tu_pdf_sin_estructura.pdf",
+    "expected_keywords": ["resultado", "porcentaje", "%"]
+  }
+]
