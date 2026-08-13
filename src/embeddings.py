@@ -17,30 +17,42 @@ load_dotenv()
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 ENDPOINT = os.getenv("GITHUB_MODELS_ENDPOINT", "https://models.github.ai/inference")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "openai/text-embedding-3-small")
-CHAT_MODEL = os.getenv("CHAT_MODEL", "gpt-4o")
+CHAT_MODEL = os.getenv("CHAT_MODEL", "openai/gpt-4o-mini")
 
 
 @lru_cache(maxsize=1)
-def get_client() -> OpenAI:
+def get_chat_client() -> OpenAI:
     if not GITHUB_TOKEN:
         raise RuntimeError(
-            "Falta GITHUB_TOKEN. Crea un Personal Access Token en GitHub "
-            "(Settings > Developer settings > Personal access tokens) y "
-            "colócalo en tu .env o en los Secrets de Streamlit Cloud."
+            "Falta GITHUB_TOKEN. Agrégalo en los Secrets de Streamlit Cloud."
         )
     return OpenAI(base_url=ENDPOINT, api_key=GITHUB_TOKEN)
 
 
 def embed_texts(texts: list[str]) -> np.ndarray:
-    """Genera embeddings para una lista de textos. Devuelve un array (n, d)."""
-    client = get_client()
+    """Embeddings via requests directo al endpoint REST de GitHub Models."""
+    if not GITHUB_TOKEN:
+        raise RuntimeError(
+            "Falta GITHUB_TOKEN"
+        )
+    headers ={"Authorization": f"Bearer {GITHUB_TOKEN}",
+              "Content-Type": "application/json",
+              "Accept":"application/vnd.github+json",
+              "X-GitHub-API-Version":"2026-03-10",}    
     # El endpoint acepta batches; se trocea por seguridad ante límites de payload.
     vectors = []
-    batch_size = 96
+    batch_size = 32
     for i in range(0, len(texts), batch_size):
         batch = texts[i : i + batch_size]
-        resp = client.embeddings.create(model=EMBEDDING_MODEL, input=batch)
-        vectors.extend([d.embedding for d in resp.data])
+        resp = requests.post(f"{ENDPOINT}/embeddings",
+                            headers=headers,
+                            json={"model":EMBEDDING_MODEL,"input":batch},
+                            timeout=60)
+        if not resp.ok:
+            raise RuntimeError(f"Error {resp.status_code} embeddings: {resp.text[:400]}"
+                              )
+        items =sorted(resp.json()["data"], key = lambda d: d["index"])
+        vectors.extend([d.embedding for d in items])
     return np.array(vectors, dtype=np.float32)
 
 
