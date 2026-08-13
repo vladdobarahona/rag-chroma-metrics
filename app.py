@@ -45,7 +45,7 @@ with st.sidebar:
         st.success(f"Reindexado: {len(chunks)} chunks en 3 colecciones (cosine/l2/ip).")
 
     st.divider()
-    st.page_link("pages/1_📊_Metricas.py", label="Ver dashboard de métricas", icon="📊")
+    st.page_link("pages/1_Metricas.py", label="Ver dashboard de métricas", icon="📊")
 
 if "history" not in st.session_state:
     st.session_state.history = []
