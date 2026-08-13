@@ -9,6 +9,7 @@ import os
 from functools import lru_cache
 
 import numpy as np
+import requests
 from dotenv import load_dotenv
 from openai import OpenAI
 
