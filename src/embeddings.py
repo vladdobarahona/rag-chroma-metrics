@@ -39,8 +39,8 @@ def embed_texts(texts: list[str]) -> np.ndarray:
     headers ={"Authorization": f"Bearer {GITHUB_TOKEN}",
               "Content-Type": "application/json",
               "Accept":"application/vnd.github+json",
-              "X-GitHub-API-Version":"2026-03-10",}    
-    # El endpoint acepta batches; se trocea por seguridad ante límites de payload.
+              "X-GitHub-Api-Version":"2026-03-10",}    
+    
     vectors = []
     batch_size = 32
     for i in range(0, len(texts), batch_size):
