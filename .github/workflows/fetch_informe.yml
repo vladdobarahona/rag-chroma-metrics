@@ -1,0 +1,38 @@
+name: Fetch Informe de Gestion 2025
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+
+      - name: Create directories
+        run: mkdir -p documents/structured
+
+      - name: Download PDF
+        run: |
+          URL="https://www.grupobancolombia.com/wcm/connect/www.grupobancolombia.com15880/9f85e839-bf52-4b5e-94ab-bf6fdb5b0fd7/Informe_de_Gestion_2025.pdf?MOD=AJPERES&CVID=pSn-Coc"
+          curl -fL "$URL" -o documents/structured/Informe_de_Gestion_2025.pdf
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Only add & commit if there are changes
+          if git status --porcelain | grep -q .; then
+            git add documents/structured/Informe_de_Gestion_2025.pdf
+            git commit -m "Add Informe_de_Gestion_2025.pdf"
+            git push origin HEAD:main
+          else
+            echo "No changes to commit"
+          fi
